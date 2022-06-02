@@ -22,7 +22,7 @@ async def test_multiple_consumers(queue: Queue[int]):
     for _ in range(3):
         tasks.append(asyncio.ensure_future(consume()))
     for i in range(3):
-        tasks.append(asyncio.ensure_future(produce(0.25 + i*0.25)))
+        tasks.append(asyncio.ensure_future(produce(0.25 + i * 0.25)))
 
     await asyncio.gather(*tasks)
     assert queue.empty()
