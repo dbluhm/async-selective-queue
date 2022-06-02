@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "async-selective-queue"
+version = "0.1.0"
+description = "Async queue with selective retrieval"
+authors = ["Daniel Bluhm <dbluhm@pm.me>"]
+license = "Apache-2.0"
+
+[tool.pytest.ini_options]
+addopts = "-p no:warnings --cov async_selective_queue"
+markers = "int: integration tests"
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "@abstract"
+]
+precision = 2
+show_missing = true
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.dev-dependencies]
+black = "^22.3.0"
+flake8 = "^4.0.1"
+pre-commit = "^2.19.0"
+pytest = "^7.1.2"
+pytest-asyncio = "^0.18.3"
+pytest-cov = "^3.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
