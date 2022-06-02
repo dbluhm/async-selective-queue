@@ -8,6 +8,7 @@ Select = Callable[[QueueEntry], bool]
 
 class AsyncSelectiveQueue(Generic[QueueEntry]):
     """Asynchronous Queue implementation with selective retrieval of entries."""
+
     def __init__(self):
         self._queue: List[QueueEntry] = []
         self._cond: asyncio.Condition = asyncio.Condition()
@@ -18,9 +19,7 @@ class AsyncSelectiveQueue(Generic[QueueEntry]):
                 return index
         return None
 
-    async def _get(
-        self, select: Optional[Select] = None
-    ) -> QueueEntry:
+    async def _get(self, select: Optional[Select] = None) -> QueueEntry:
         """Retrieve an entry from the queue."""
         while True:
             async with self._cond:
@@ -56,9 +55,7 @@ class AsyncSelectiveQueue(Generic[QueueEntry]):
         """Retrieve a entry from the queue."""
         return await asyncio.wait_for(self._get(select), timeout)
 
-    def get_all(
-        self, select: Optional[Select] = None
-    ) -> Sequence[QueueEntry]:
+    def get_all(self, select: Optional[Select] = None) -> Sequence[QueueEntry]:
         """Return all entries matching a given select."""
         entries = []
         if not self._queue:
@@ -81,9 +78,7 @@ class AsyncSelectiveQueue(Generic[QueueEntry]):
         self._queue[:] = filtered
         return entries
 
-    def get_nowait(
-        self, select: Optional[Select] = None
-    ) -> Optional[QueueEntry]:
+    def get_nowait(self, select: Optional[Select] = None) -> Optional[QueueEntry]:
         """Return a entry from the queue without waiting."""
         if not self._queue:
             return None
