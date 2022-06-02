@@ -1,9 +1,12 @@
 [tool.poetry]
 name = "async-selective-queue"
-version = "0.1.0"
+version = "0.1.0-0"
 description = "Async queue with selective retrieval"
 authors = ["Daniel Bluhm <dbluhm@pm.me>"]
 license = "Apache-2.0"
+readme = "README.md"
+homepage = "https://github.com/dbluhm/async-selective-queue"
+keywords = ["async", "queue", "conditional"]
 
 [tool.pytest.ini_options]
 addopts = "-p no:warnings --cov async_selective_queue"
