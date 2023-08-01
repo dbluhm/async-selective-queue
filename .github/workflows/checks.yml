@@ -28,7 +28,7 @@ jobs:
           pip install black==23.3.0
       - name: Black Format Check
         run: |
-          black --check async_selective_queue tests
+          black --check async_selective_queue.py tests
 
   test:
     name: Tests
