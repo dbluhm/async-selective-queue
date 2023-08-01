@@ -4,52 +4,29 @@ on:
   release:
     types: [created]
 
-env:
-  POETRY_VERSION: 1.1.13
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.7
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.7
-    - name: Cache poetry installation
-      id: cache-poetry
-      uses: actions/cache@v2
-      with:
-          path: ~/.local
-          key: poetry-${{ runner.os }}-py37-${{ env.POETRY_VERSION }}-${{ hashFiles('.github/workflows/publish-release.yml') }}
-    - name: Install poetry
-      if: steps.cache-poetry.outputs.cache-hit != 'true'
-      run: |
-          curl -sSL https://install.python-poetry.org | python3 - --version=${{ env.POETRY_VERSION }}
-    - name: Setup poetry environment
-      id: setup-poetry-env
-      run: |
-          poetry env use $(which python)
-          echo "::set-output name=poetry-env::$(poetry env info --path)"
-    - name: Cache poetry virtual environment
-      id: cache-poetry-venv
-      uses: actions/cache@v2
-      with:
-          path: ${{ steps.setup-poetry-env.outputs.poetry-env }}
-          key: poetry-env-${{ runner.os }}-py37-${{ env.POETRY_VERSION }}-${{ hashFiles('poetry.lock') }}-${{ hashFiles('.github/workflows/tests.yml') }}
-    - name: Install dependencies
-      if: steps.cache-poetry-venv.outputs.cache-hit != 'true'
-      run: |
-          poetry install
-    - name: Run unit tests with pytest
-      run: |
-        poetry run pytest ./tests
-    - name: Build package
-      run: |
-        poetry build
-    - name: Publish package
-      env:
-        POETRY_PYPI_TOKEN_PYPI: ${{secrets.PYPI_API_TOKEN}}
-      run: |
-        poetry publish
+      - uses: actions/checkout@v3
+      - name: Install poetry
+        run: pipx install poetry
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.7
+          cache: poetry
+      - name: Install dependencies
+        run: poetry install
+      - name: Confidence check (run tests)
+        run: |
+          poetry run pytest
+      - name: Build package
+        run: |
+          poetry build
+      - name: Publish package
+        env:
+          POETRY_PYPI_TOKEN_PYPI: ${{secrets.PYPI_API_TOKEN}}
+        run: |
+          poetry publish
