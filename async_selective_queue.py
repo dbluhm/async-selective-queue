@@ -1,3 +1,5 @@
+"""Async Selective Queue."""
+
 import asyncio
 from typing import Callable, Generic, List, Optional, Sequence, TypeVar
 
@@ -10,6 +12,7 @@ class AsyncSelectiveQueue(Generic[QueueEntry]):
     """Asynchronous Queue implementation with selective retrieval of entries."""
 
     def __init__(self):
+        """Initialize the queue."""
         self._queue: List[QueueEntry] = []
         self._cond: asyncio.Condition = asyncio.Condition()
 
@@ -62,7 +65,7 @@ class AsyncSelectiveQueue(Generic[QueueEntry]):
             return entries
 
         if not select:
-            entries = [entry for entry in self._queue]
+            entries = list(self._queue)
             self._queue.clear()
             return entries
 

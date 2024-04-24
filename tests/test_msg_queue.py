@@ -4,13 +4,10 @@ import pytest
 from async_selective_queue import AsyncSelectiveQueue as Queue
 
 
-@pytest.fixture
-def queue():
-    yield Queue()
-
-
 @pytest.mark.asyncio
-async def test_multiple_consumers(queue: Queue[int]):
+async def test_multiple_consumers():
+    queue: Queue[int] = Queue()
+
     async def consume():
         await queue.get()
 
@@ -20,16 +17,17 @@ async def test_multiple_consumers(queue: Queue[int]):
 
     tasks = []
     for _ in range(3):
-        tasks.append(asyncio.ensure_future(consume()))
+        tasks.append(consume())
     for i in range(3):
-        tasks.append(asyncio.ensure_future(produce(0.25 + i * 0.25)))
+        tasks.append(produce(0.25 + i * 0.25))
 
     await asyncio.gather(*tasks)
     assert queue.empty()
 
 
 @pytest.mark.asyncio
-async def test_condition_value_present_no_match(queue: Queue[int]):
+async def test_condition_value_present_no_match():
+    queue: Queue[int] = Queue()
     await queue.put(0)
 
     async def consume():
@@ -39,14 +37,15 @@ async def test_condition_value_present_no_match(queue: Queue[int]):
         await asyncio.sleep(1)
         await queue.put(1)
 
-    tasks = (asyncio.ensure_future(consume()), asyncio.ensure_future(produce()))
+    tasks = (consume(), produce())
     await asyncio.gather(*tasks)
     assert queue.flush() == [0]
     assert queue.empty()
 
 
 @pytest.mark.asyncio
-async def test_condition_value_not_initially_present(queue: Queue[int]):
+async def test_condition_value_not_initially_present():
+    queue: Queue[int] = Queue()
     for i in range(3):
         await queue.put(i)
 
@@ -57,14 +56,15 @@ async def test_condition_value_not_initially_present(queue: Queue[int]):
         await asyncio.sleep(1)
         await queue.put(3)
 
-    tasks = (asyncio.ensure_future(consume()), asyncio.ensure_future(produce()))
+    tasks = (consume(), produce())
     await asyncio.gather(*tasks)
     assert queue.flush() == [0, 1, 2]
     assert queue.empty()
 
 
 @pytest.mark.asyncio
-async def test_out_of_order_retrieval(queue: Queue[int]):
+async def test_out_of_order_retrieval():
+    queue: Queue[int] = Queue()
     for i in range(3):
         await queue.put(i)
 
@@ -75,7 +75,8 @@ async def test_out_of_order_retrieval(queue: Queue[int]):
 
 
 @pytest.mark.asyncio
-async def test_get_all(queue: Queue[int]):
+async def test_get_all():
+    queue: Queue[int] = Queue()
     for i in range(3):
         await queue.put(i)
 
@@ -85,7 +86,8 @@ async def test_get_all(queue: Queue[int]):
 
 
 @pytest.mark.asyncio
-async def test_get_all_select(queue: Queue[int]):
+async def test_get_all_select():
+    queue: Queue[int] = Queue()
     for i in range(3):
         await queue.put(i)
 
@@ -95,7 +97,8 @@ async def test_get_all_select(queue: Queue[int]):
 
 
 @pytest.mark.asyncio
-async def test_get_nowait(queue: Queue[int]):
+async def test_get_nowait():
+    queue: Queue[int] = Queue()
     assert queue.get_nowait() is None
 
     for i in range(4):
@@ -110,7 +113,8 @@ async def test_get_nowait(queue: Queue[int]):
 
 
 @pytest.mark.asyncio
-async def test_flush(queue: Queue[int]):
+async def test_flush():
+    queue: Queue[int] = Queue()
     for i in range(3):
         await queue.put(i)
 
