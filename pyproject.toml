@@ -1,36 +1,64 @@
-[tool.poetry]
+[project]
 name = "async-selective-queue"
-version = "0.1.0-0"
+version = "0.1.1"
 description = "Async queue with selective retrieval"
-authors = ["Daniel Bluhm <dbluhm@pm.me>"]
-license = "Apache-2.0"
+authors = [
+    {name = "Daniel Bluhm", email = "dbluhm@pm.me"},
+]
+dependencies = []
+requires-python = "<4.0,>=3.9"
 readme = "README.md"
-homepage = "https://github.com/dbluhm/async-selective-queue"
+license = {text = "Apache-2.0"}
 keywords = ["async", "queue", "conditional"]
+
+[project.urls]
+homepage = "https://github.com/dbluhm/async-selective-queue"
+
+[project.packages]
+source = "async_selective_queue"
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[tool.pdm]
+distribution = true
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "pre-commit>=3.5.0",
+    "pytest-ruff>=0.1.1",
+    "pytest<8.0.0,>=7.1.2",
+    "pytest-asyncio>=0.21.1",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.4.1",
+]
+
+[tool.pdm.build]
+includes = []
 
 [tool.pytest.ini_options]
 addopts = "-p no:warnings --cov async_selective_queue"
 markers = "int: integration tests"
 
-[tool.coverage.report]
-exclude_lines = [
-    "pragma: no cover",
-    "@abstract"
+[tool.ruff]
+line-length = 90
+extend-exclude = ["example*.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "C", "D", "TID"]
+ignore = [
+    # Google Python Doc Style
+    "D203", "D204", "D213", "D215", "D400", "D401", "D404", "D406", "D407",
+    "D408", "D409", "D413",
+    "D202", # Allow blank line after docstring
 ]
+per-file-ignores = {"**/{tests}/*" = ["F841", "D", "E501"]}
+
+[tool.coverage.report]
+exclude_lines = ["pragma: no cover", "@abstract"]
 precision = 2
 show_missing = true
 
-[tool.poetry.dependencies]
-python = "^3.7"
-
-[tool.poetry.dev-dependencies]
-black = "^22.3.0"
-flake8 = "^4.0.1"
-pre-commit = "^2.19.0"
-pytest = "^7.1.2"
-pytest-asyncio = "^0.18.3"
-pytest-cov = "^3.0.0"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[tool.coverage.run]
+branch = true

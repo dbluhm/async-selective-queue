@@ -1,5 +1,4 @@
-name: Upload To PyPI
-
+name: Publish
 on:
   release:
     types: [created]
@@ -7,26 +6,19 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
 
     steps:
       - uses: actions/checkout@v3
-      - name: Install poetry
-        run: pipx install poetry
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v4
+      - name: Setup Python
+        uses: pdm-project/setup-pdm@v3
         with:
-          python-version: 3.7
-          cache: poetry
+          python-version: 3.9
+          cache: true
       - name: Install dependencies
-        run: poetry install
-      - name: Confidence check (run tests)
-        run: |
-          poetry run pytest
-      - name: Build package
-        run: |
-          poetry build
-      - name: Publish package
-        env:
-          POETRY_PYPI_TOKEN_PYPI: ${{secrets.PYPI_API_TOKEN}}
-        run: |
-          poetry publish
+        run: pdm install
+      - name: Run pytest
+        run: pdm run pytest
+      - name: Publish
+        run: pdm publish
