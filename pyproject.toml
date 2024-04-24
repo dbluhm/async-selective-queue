@@ -38,8 +38,7 @@ dev = [
 includes = []
 
 [tool.pytest.ini_options]
-addopts = "-p no:warnings --cov async_selective_queue"
-markers = "int: integration tests"
+addopts = "--cov async_selective_queue"
 
 [tool.ruff]
 line-length = 90

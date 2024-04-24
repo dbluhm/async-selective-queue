@@ -1,4 +1,5 @@
 import asyncio
+from typing import Callable
 import pytest
 
 from async_selective_queue import AsyncSelectiveQueue as Queue
@@ -9,8 +10,16 @@ def queue():
     yield Queue()
 
 
+@pytest.fixture
+def create_task(event_loop: asyncio.AbstractEventLoop):
+    def _create_task(coro):
+        return asyncio.ensure_future(coro, loop=event_loop)
+
+    return _create_task
+
+
 @pytest.mark.asyncio
-async def test_multiple_consumers(queue: Queue[int]):
+async def test_multiple_consumers(queue: Queue[int], create_task: Callable):
     async def consume():
         await queue.get()
 
@@ -20,16 +29,16 @@ async def test_multiple_consumers(queue: Queue[int]):
 
     tasks = []
     for _ in range(3):
-        tasks.append(asyncio.ensure_future(consume()))
+        tasks.append(create_task(consume()))
     for i in range(3):
-        tasks.append(asyncio.ensure_future(produce(0.25 + i * 0.25)))
+        tasks.append(create_task(produce(0.25 + i * 0.25)))
 
     await asyncio.gather(*tasks)
     assert queue.empty()
 
 
 @pytest.mark.asyncio
-async def test_condition_value_present_no_match(queue: Queue[int]):
+async def test_condition_value_present_no_match(queue: Queue[int], create_task: Callable):
     await queue.put(0)
 
     async def consume():
@@ -39,14 +48,16 @@ async def test_condition_value_present_no_match(queue: Queue[int]):
         await asyncio.sleep(1)
         await queue.put(1)
 
-    tasks = (asyncio.ensure_future(consume()), asyncio.ensure_future(produce()))
+    tasks = (create_task(consume()), create_task(produce()))
     await asyncio.gather(*tasks)
     assert queue.flush() == [0]
     assert queue.empty()
 
 
 @pytest.mark.asyncio
-async def test_condition_value_not_initially_present(queue: Queue[int]):
+async def test_condition_value_not_initially_present(
+    queue: Queue[int], create_task: Callable
+):
     for i in range(3):
         await queue.put(i)
 
@@ -57,7 +68,7 @@ async def test_condition_value_not_initially_present(queue: Queue[int]):
         await asyncio.sleep(1)
         await queue.put(3)
 
-    tasks = (asyncio.ensure_future(consume()), asyncio.ensure_future(produce()))
+    tasks = (create_task(consume()), create_task(produce()))
     await asyncio.gather(*tasks)
     assert queue.flush() == [0, 1, 2]
     assert queue.empty()
