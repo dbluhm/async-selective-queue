@@ -1,11 +1,12 @@
 import asyncio
 from typing import Callable
 import pytest
+import pytest_asyncio
 
 from async_selective_queue import AsyncSelectiveQueue as Queue
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 def queue():
     yield Queue()
 
