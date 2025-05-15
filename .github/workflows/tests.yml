@@ -16,12 +16,13 @@ jobs:
         python-version: ["3.8", "3.9", "3.10"]
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: pdm-project/setup-pdm@v3
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@5
         with:
+          version: "0.7.3"
           python-version: ${{ matrix.python-version }}
-          cache: true
+          enable-cache: true
       - name: Install dependencies
-        run: pdm install
+        run: uv sync --locked --all-extras --dev
       - name: Run pytest
-        run: pdm run pytest
+        run: uv run pytest

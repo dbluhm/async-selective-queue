@@ -17,25 +17,25 @@ homepage = "https://github.com/dbluhm/async-selective-queue"
 [project.packages]
 source = "async_selective_queue"
 
-[build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
-
-[tool.pdm]
-distribution = true
-
-[tool.pdm.dev-dependencies]
+[dependency-groups]
 dev = [
     "pre-commit>=3.5.0",
     "pytest-ruff>=0.1.1",
     "pytest<8.0.0,>=7.1.2",
     "pytest-asyncio>=0.21.1",
     "pytest-cov>=4.1.0",
-    "ruff>=0.4.1",
+    "ruff>=0.11.9",
 ]
 
-[tool.pdm.build]
-includes = []
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["async_selective_queue.py"]
+
+[tool.hatch.build.targets.sdist]
+only-include = ["async_selective_queue.py"]
 
 [tool.pytest.ini_options]
 addopts = "--cov async_selective_queue"
