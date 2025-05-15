@@ -4,7 +4,7 @@ requires-python = ">=3.9, <4.0"
 
 [[package]]
 name = "async-selective-queue"
-version = "0.1.1"
+version = "0.1.1.post0"
 source = { editable = "." }
 
 [package.dev-dependencies]
